@@ -1,0 +1,39 @@
+name: Sync upstream
+
+on:
+  schedule:
+    - cron: '27 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge the current upstream branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const current = await github.rest.repos.get({ owner, repo });
+            if (!current.data.fork || !current.data.parent) {
+              core.setFailed(`${owner}/${repo} is not a fork`);
+              return;
+            }
+
+            const upstream = current.data.parent.full_name;
+            const [upstreamOwner, upstreamRepo] = upstream.split('/');
+            const branch = current.data.default_branch;
+            const source = await github.rest.git.getRef({
+              owner: upstreamOwner,
+              repo: upstreamRepo,
+              ref: `heads/${branch}`,
+            });
+            const result = await github.rest.repos.mergeUpstream({ owner, repo, branch });
+            core.info(`Synced ${upstream}@${source.data.object.sha} into ${owner}/${repo}@${branch}: ${result.data.message}`);
