@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title data-i18n data-zh="这个 skill 是怎么工作的？" data-en="How does this skill work?">How does this skill work?</title>
 <style>
-/* lesson-shell v1: shared by every example page; keep identical across files */
+/* lesson-shell v2: shared by every example page; keep identical across files */
 :root{color-scheme:light dark;--bar:56px;--bg:#f7f6f2;--surface:#fff;--stage:#eeece6;--ink:#141618;--text:#2a2e31;--muted:#61676c;--faint:#8b9196;--line:#e4e1d9;--line-strong:#cbc7bd;--accent:#d9480f;--accent-soft:#fcebe2;--focus:#d9480f;--ok:#1d7a4c;--sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;--mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace}
 @media(prefers-color-scheme:dark){:root{--bg:#111315;--surface:#181b1e;--stage:#0b0d0f;--ink:#f3f4f2;--text:#dadedc;--muted:#a1a7ab;--faint:#7a8085;--line:#272b2f;--line-strong:#3b4045;--accent:#ff7a45;--accent-soft:#2b1a11;--focus:#ff7a45;--ok:#4cc38a}}
 *{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0;background:var(--bg);color:var(--text);font:15.5px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
@@ -53,12 +53,32 @@ input[type=range]{width:100%;min-height:32px;margin:4px 0}
 textarea{display:block;width:100%;min-height:90px;margin-top:8px;padding:10px 12px;font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--line-strong);border-radius:10px;resize:vertical}
 table{border-collapse:collapse;width:100%;margin-top:14px;font-size:14px}th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:top}th:first-child,td:first-child{padding-left:0}caption{text-align:left;font-weight:600;color:var(--ink);margin-bottom:4px}
 .limits{color:var(--muted);font-size:14px}
+.pane-more{display:none}
 .foot{margin-top:8px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--faint)}
+/* attention: figure parts [data-part], step focus [data-focus], ordered highlights ol.look, dual-coding terms [data-ref] */
+#experiment [data-part]{transition:opacity .28s ease,filter .28s ease,box-shadow .2s ease}
+#experiment.tf-ring [data-part].tf-hot:not(svg *){box-shadow:0 0 0 2px var(--accent),0 0 0 7px color-mix(in srgb,var(--accent) 18%,transparent);border-radius:10px}
+#experiment.tf-ring svg [data-part].tf-hot{filter:drop-shadow(0 0 1px var(--accent)) drop-shadow(0 0 5px color-mix(in srgb,var(--accent) 40%,transparent))}
+.focus-bar{display:flex;align-items:center;gap:12px;min-height:30px;margin:-4px 0 -2px}
+.focus-caption{flex:1;min-width:0;margin:0;font-size:13px;line-height:1.4;color:var(--ink)}.focus-caption:empty{visibility:hidden}
+.focus-caption .look-n{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-right:8px;padding:0 5px;border-radius:999px;background:var(--accent);color:#fff;font:700 11px/1 var(--sans);vertical-align:1px}
+.focus-toggle{flex:none;display:inline-flex;align-items:center;gap:7px;min-height:30px;font-size:12.5px;color:var(--muted);cursor:pointer;white-space:nowrap}.focus-toggle input{width:15px;height:15px;margin:0}
+ol.look{margin:12px 0 8px;padding:0;list-style:none;counter-reset:look}
+ol.look>li{counter-increment:look;position:relative;margin:0 0 6px;padding:8px 10px 8px 38px;border:1px solid var(--line);border-radius:10px;cursor:pointer;color:var(--muted);transition:border-color .15s,background .15s}
+ol.look>li::before{content:counter(look);position:absolute;left:10px;top:9px;display:grid;place-items:center;width:20px;height:20px;border-radius:999px;border:1px solid var(--line-strong);font:650 11px/1 var(--sans);color:var(--muted)}
+ol.look>li:hover{border-color:var(--line-strong)}ol.look>li[aria-current=step]{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}ol.look>li[aria-current=step]::before{background:var(--accent);border-color:var(--accent);color:#fff}
+.look-nav{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 14px}.look-nav button{min-height:34px;padding:0 11px;font-size:13px}.look-nav .look-num{min-width:34px;padding:0}.look-nav .look-num[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+[data-ref]:not(a,button,input,select,label){text-decoration:underline dotted color-mix(in srgb,var(--accent) 70%,transparent);text-decoration-thickness:1.5px;text-underline-offset:3px;cursor:help;border-radius:4px}
+[data-ref].tf-ref-on{background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent-soft);color:var(--ink)}[data-ref][aria-pressed=true]{background:var(--accent-soft);box-shadow:0 0 0 1px var(--accent)}
+.part-tip{position:fixed;z-index:40;pointer-events:none;max-width:240px;padding:5px 9px;border-radius:8px;background:var(--ink);color:var(--bg);font:500 12.5px/1.35 var(--sans);box-shadow:0 4px 14px rgb(0 0 0/.18)}
 @media(min-width:960px) and (min-height:560px){
 .lesson{display:grid;grid-template-columns:minmax(0,1fr) clamp(380px,35vw,500px);height:calc(100dvh - var(--bar))}
 .panel{display:block;grid-column:2;grid-row:1;overflow-y:auto;overscroll-behavior:contain;background:var(--surface);border-left:1px solid var(--line)}
 .figure-pane{grid-column:1;grid-row:1;margin:0;border-radius:0;padding:24px 28px;min-height:0}
+.figure-pane{overflow-y:auto;overscroll-behavior:contain}.figure-pane>*{flex-shrink:0}
 .figure-pane .stage{flex:1}.figure-pane .stage>svg,.figure-pane .stage>canvas{height:100%;max-height:100%}
+.pane-more{display:flex;grid-column:1;grid-row:1;align-self:end;position:relative;z-index:2;justify-content:center;align-items:flex-end;height:76px;padding-bottom:14px;pointer-events:none;background:linear-gradient(color-mix(in srgb,var(--stage) 0%,transparent),var(--stage) 72%)}
+.pane-more button{pointer-events:auto;min-height:32px;padding:0 14px;border-radius:999px;font-size:12.5px;box-shadow:0 2px 10px rgb(0 0 0/.12)}
 .intro{padding:32px 32px 6px}.steps{padding:0 32px 48px}
 .bar{padding:0 20px 0 24px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
@@ -81,7 +101,7 @@ table{border-collapse:collapse;width:100%;margin-top:14px;font-size:14px}th,td{t
 .node[data-state=stop]{border-color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}
 .node[data-state=stop] .out{color:var(--bad);font-weight:600}
 .node.gate::after{content:"";position:absolute;right:-6px;top:50%;width:4px;height:4px;border-radius:50%;background:var(--line-strong)}
-.preview{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr);gap:12px;flex:1;min-height:0}
+.preview{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr);gap:12px;flex:1 0 auto}
 .box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0;overflow:auto}
 .box h3{margin:0 0 10px;font:600 12px/1.4 var(--sans);color:var(--muted)}
 .chat{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:13px;line-height:1.45}
@@ -113,14 +133,21 @@ table{border-collapse:collapse;width:100%;margin-top:14px;font-size:14px}th,td{t
 .skips label.choice{align-items:center;font-size:14px}.skips .hint{display:block;font-size:12.5px;color:var(--muted)}
 .mode-row{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
 .seg{display:inline-flex;padding:3px;border:1px solid var(--line-strong);border-radius:11px;background:var(--surface)}
-.seg label{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;color:var(--muted)}
+.seg label{position:relative;display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;color:var(--muted)}
 .seg input{position:absolute;opacity:0;pointer-events:none}
 .seg label:has(input:checked){background:var(--ink);color:var(--bg)}
 .seg label:has(input:focus-visible){outline:2px solid var(--focus);outline-offset:1px}
 .order{margin:10px 0 14px;padding:0;list-style:none;display:grid;gap:6px;counter-reset:o}
 .order li{display:grid;grid-template-columns:22px 1fr;gap:8px;font-size:14px}
 .order li::before{counter-increment:o;content:counter(o);font:600 11px/1.9 var(--mono);color:var(--accent)}
-@media(max-width:700px){.pipeline{grid-template-columns:repeat(2,minmax(0,1fr))}.preview{grid-template-columns:1fr}.wire{grid-template-columns:1fr}}
+.node[data-state=optional]{border-style:dashed}
+.node[data-state=optional] .num{color:var(--faint)}
+.node[data-state=hidden] .out{color:var(--faint)}
+.ctx-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:2px 0 12px}
+.ctx-row .small{margin:0}
+.check{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;cursor:pointer}
+.terms [data-ref]{border-bottom:1.5px dotted var(--accent);cursor:help}
+@media(max-width:700px){.readouts .readout:last-child{grid-column:1/-1}.pipeline{grid-template-columns:repeat(2,minmax(0,1fr))}.preview{grid-template-columns:1fr}.wire{grid-template-columns:1fr}}
 @media(min-width:960px) and (min-height:560px){.figure-pane{overflow:auto}}
 </style>
 </head>
@@ -136,11 +163,11 @@ table{border-collapse:collapse;width:100%;margin-top:14px;font-size:14px}th,td{t
 <div class="intro">
 <ul class="meta"><li><span lang="zh">关于这个 skill</span><span lang="en">About this skill</span></li><li><span lang="zh">流程模型</span><span lang="en">Flow model</span></li><li><span lang="zh">约 3 分钟</span><span lang="en">~3 min</span></li></ul>
 <h1><span lang="zh">这个 skill 先画图吗？</span><span lang="en">Does this skill start by drawing?</span></h1>
-<p class="lead" lang="zh">teachable-figures 把一个知识点做成“先预测、再动手、后解释”的互动图。这一页本身也是用它做的：给它几个不同的请求，再拿掉其中一步，看看结果会怎样。</p>
-<p class="lead" lang="en">teachable-figures turns one idea into a “predict, try, explain” interactive figure. This page is built the same way: hand it a few different requests, then remove a step and see what breaks.</p>
+<p class="lead" lang="zh">teachable-figures 把一个知识点做成“先预测、再动手、后解释”的互动图。这一页本身也是用它做的：给它几个不同的请求，再拿掉其中一步，看看结果会怎样。留意左边的图：每一步只亮出和它有关的部分，其余变暗——这就是 skill 生成的“注意力层”，右上角的“Focus guide”可以把它关掉。</p>
+<p class="lead" lang="en">teachable-figures turns one idea into a “predict, try, explain” interactive figure. This page is built the same way: hand it a few different requests, then remove a step and see what breaks. Watch the figure on the left: each step lights only the parts it is about and dims the rest. That is the attention layer the skill builds; the Focus guide switch turns it off.</p>
 </div>
 <div class="steps">
-<section class="step" aria-labelledby="predict-title">
+<section class="step" aria-labelledby="predict-title" data-focus="first">
 <h2 id="predict-title"><span class="n">01</span><span lang="zh">预测</span><span lang="en">Predict</span></h2>
 <form id="prediction-form">
 <fieldset>
@@ -153,10 +180,19 @@ table{border-collapse:collapse;width:100%;margin-top:14px;font-size:14px}th,td{t
 <p id="prediction-status" class="small" aria-live="polite"></p>
 </form>
 </section>
-<section class="step" aria-labelledby="route-title">
+<section class="step" aria-labelledby="route-title" data-focus="st-scope st-workspace st-audience st-mode first r-verdict r-audience">
 <h2 id="route-title"><span class="n">02</span><span lang="zh">交给它一个请求</span><span lang="en">Hand it a request</span></h2>
 <p lang="zh">选一个请求，左边的流程会显示每一步做出的决定。至少试两个，其中一个最好是它<strong>不该</strong>做的。</p>
 <p lang="en">Pick a request. The flow on the left shows the decision each step makes. Try at least two, ideally one it <strong>shouldn't</strong> build.</p>
+<p class="small"><span lang="zh">先回答：这张图给谁用？</span><span lang="en">First: who will use the figure?</span></p>
+<div class="ctx-row">
+<div class="seg" role="radiogroup" data-i18n data-zh-aria-label="使用者" data-en-aria-label="Audience" aria-label="Audience">
+<label><input type="radio" name="audience" value="self" checked disabled><span lang="zh">自学者（默认）</span><span lang="en">Self-learner (default)</span></label>
+<label><input type="radio" name="audience" value="presenter" disabled><span lang="zh">老师 / 家长</span><span lang="en">Teacher / parent</span></label>
+</div>
+<label class="check"><input type="checkbox" id="workspace" disabled><span lang="zh">项目里有学习档案</span><span lang="en">Project has a learner workspace</span></label>
+</div>
+<p class="small"><span lang="zh">学习档案是三个本地 Markdown 文件：<code>LESSONS.md</code>（做过的课）、<code>LEARNER.md</code>（学习者已有知识和观察记录）、<code>LEARNING-PLAN.md</code>（知识点图）。agent 每次开工先读它们，交付后再更新。</span><span lang="en">A learner workspace is three local Markdown files: <code>LESSONS.md</code> (lessons built), <code>LEARNER.md</code> (prior knowledge and observations), <code>LEARNING-PLAN.md</code> (a knowledge-point graph). The agent reads them before asking anything and updates them after delivery.</span></p>
 <fieldset class="request-list" id="requests" disabled>
 <legend class="small"><span lang="zh">请求</span><span lang="en">Request</span></legend>
 <label class="choice"><input type="radio" name="request" value="gear" checked><span><span lang="zh">惰轮为什么不改变转速</span><span lang="en">Why an idler gear keeps the speed</span></span><span class="tag">gear</span></label>
@@ -175,12 +211,13 @@ table{border-collapse:collapse;width:100%;margin-top:14px;font-size:14px}th,td{t
 <p class="small"><span lang="zh">引导模式只问尚未明确的信息，至多五个问题，每题都带推荐答案。下面展示完整的五个话题示例，已知答案不再询问；说“直接生成”就跳过提问，按默认值做，并在交付时列出假设。</span><span lang="en">Guided mode asks only about missing details, up to five questions, each with a recommended answer. Below is a full five-topic example; known answers are not asked again. Saying “just build it” skips the questions; it uses defaults and lists its assumptions on delivery.</span></p>
 <p id="route-status" class="status" role="status"></p>
 </section>
-<section class="step" aria-labelledby="skip-title">
+<section class="step" aria-labelledby="skip-title" data-focus="output r-teaches r-visible">
 <h2 id="skip-title"><span class="n">03</span><span lang="zh">拿掉一步</span><span lang="en">Remove a step</span></h2>
 <p lang="zh">如果跳过其中一步，产出还“看起来完成了”吗？还能教会吗？逐个勾选，留意左下角的产出和读数。</p>
 <p lang="en">If one step is skipped, does the output still look finished? Does it still teach? Tick them one at a time and watch the output and readouts.</p>
 <fieldset class="skips" id="skips" disabled>
 <legend class="small"><span lang="zh">跳过这一步</span><span lang="en">Skip this step</span></legend>
+<label class="choice"><input type="checkbox" id="skip-workspace" value="workspace"><span><span lang="zh">了解学习者</span><span lang="en">Learner context</span><span class="hint"><span lang="zh">读学习档案、背景探测题</span><span lang="en">Read the workspace, probe background</span></span></span></label>
 <label class="choice"><input type="checkbox" id="skip-mechanism" value="mechanism"><span><span lang="zh">找机制</span><span lang="en">Find the mechanism</span><span class="hint"><span lang="zh">一个能改变的原因，一个能看到的结果</span><span lang="en">One cause to change, one effect to see</span></span></span></label>
 <label class="choice"><input type="checkbox" id="skip-spec" value="spec"><span><span lang="zh">教学规格</span><span lang="en">Teaching spec</span><span class="hint"><span lang="zh">预测选项、误解、解释、迁移题</span><span lang="en">Prediction, misconception, insight, transfer</span></span></span></label>
 <label class="choice"><input type="checkbox" id="skip-renderer" value="renderer"><span><span lang="zh">选渲染方式</span><span lang="en">Choose the renderer</span><span class="hint"><span lang="zh">按主体需要的形状和细节来选</span><span lang="en">Matched to the subject's shape and detail</span></span></span></label>
@@ -194,14 +231,29 @@ table{border-collapse:collapse;width:100%;margin-top:14px;font-size:14px}th,td{t
 <h2 id="explain-title"><span class="n">04</span><span lang="zh">解释</span><span lang="en">Explain</span></h2>
 <p id="prediction-feedback" class="callout"></p>
 <div lang="zh">
-<p><strong>这个 skill 先决定学习者要改变什么、观察什么，然后才决定画什么。</strong>顺序是：</p>
-<ol class="order"><li>范围：没有可操作机制的请求（数据看板、整门课）在这里被挡下或改道。</li><li>交互模式：先问一轮，或按默认值直接做。</li><li>找机制：一个原因、一个结果、一个可能被推翻的误解。</li><li>选渲染：按主体选——示意图、iso-figure、Anatomy 机械套件，或来源网格。</li><li>教学规格：在画任何几何之前写好。</li><li>从一个模型构建：图和读数都只“观察”这个模型。</li><li>可操作，然后验证。</li></ol>
-<p>刚才拿掉的几步里，只有“选渲染方式”的失败能在截图里看出来。没有可改变的原因、没有预测、只能用鼠标、端点算错——这些情况下图都“看起来完成了”。所以最后一步是<strong>操作</strong>这张图来验证，而不只是看截图。</p>
+<p><strong>这个 skill 先弄清是谁在学、已经会什么，再决定学习者要改变什么、观察什么，最后才决定画什么。</strong>按下面的编号一步步看左边的图（不会自动播放）：</p>
 </div>
 <div lang="en">
-<p><strong>This skill decides what the learner will change and observe before it decides what to draw.</strong> The order is:</p>
-<ol class="order"><li>Scope: requests with no mechanism to operate (dashboards, whole courses) are declined or redirected here.</li><li>Interaction mode: ask one round of questions, or build from defaults.</li><li>Mechanism: one cause, one effect, one misconception that can be disproved.</li><li>Renderer: chosen by subject — schematic, iso-figure, the Anatomy mechanical kit, or source meshes.</li><li>Teaching spec: written before any geometry.</li><li>Build from one model: the picture and the readouts only observe it.</li><li>Make it operable, then verify.</li></ol>
-<p>Of the steps you removed, only a skipped renderer choice shows up in a screenshot. With no cause to change, no prediction, mouse-only controls, or a wrong endpoint, the figure still looks finished. That is why the last step <strong>operates</strong> the figure instead of only looking at it.</p>
+<p><strong>This skill first settles who is learning and what they already know, then what the learner will change and observe, and only then what to draw.</strong> Step through the numbers below and watch the figure (nothing plays by itself):</p>
+</div>
+<ol class="look" data-i18n data-zh-aria-label="按顺序看" data-en-aria-label="Look in order" aria-label="Look in order">
+<li data-focus="st-workspace st-audience"><span lang="zh">先读学习档案，问清给谁用：老师自己讲解，就做成插图或课堂练习；自学者没人搭支架，就先做背景探测。</span><span lang="en">Read the workspace and ask who it is for: a teacher narrates, so build an illustration or class exercise; a self-learner has nobody scaffolding, so probe their background first.</span></li>
+<li data-focus="st-scope r-verdict"><span lang="zh">范围：没有可操作机制的请求（看板、整门课）在这里被挡下或改道。</span><span lang="en">Scope: requests with no mechanism to operate (dashboards, whole courses) stop or are redirected here.</span></li>
+<li data-focus="st-mode first"><span lang="zh">至多五个问题，各带推荐答案；已知的不问；说“直接生成”就用默认值并列出假设。</span><span lang="en">At most five questions, each with a default; nothing already known is asked; “just build it” uses defaults and lists assumptions.</span></li>
+<li data-focus="st-mechanism st-spec"><span lang="zh">先定机制和教学规格：一个原因、一个结果、一个要推翻的误解，以及预测阶段要藏起什么。</span><span lang="en">Mechanism and spec come first: one cause, one effect, one misconception to disprove, and what the predict stage hides.</span></li>
+<li data-focus="st-renderer st-build r-renderer"><span lang="zh">再按主体选渲染，从一个模型构建：图和读数只“观察”这个模型。</span><span lang="en">Then pick the renderer for the subject and build from one model: picture and readouts only observe it.</span></li>
+<li data-focus="st-operable st-verify r-visible"><span lang="zh">可操作，然后真的去操作验证——截图只能发现少数失败。</span><span lang="en">Make it operable, then operate it to verify: a screenshot catches few failures.</span></li>
+<li data-focus="st-deliver st-evolve"><span lang="zh">交付后更新学习档案；有了学习者证据，可选地用类型化补丁演化出 v2。</span><span lang="en">After delivery, update the workspace; with learner evidence, optionally evolve a v2 through a typed patch.</span></li>
+</ol>
+<div class="terms">
+<p lang="zh">每一步背后都有学习科学的理由：先接上学习者的<span data-ref="st-workspace st-audience">已有图式</span>；<span data-ref="st-spec">支架逐步撤掉</span>，从带提示的练习走向独立练习；<span data-ref="st-mechanism">一次只改一个条件</span>，控制认知负荷；预测时用<span data-ref="first">聚焦</span>把注意力引到该看的地方；<span data-ref="r-verdict r-renderer r-teaches r-visible r-audience">文字标签紧挨着图形</span>，悬停任一边，另一边跟着亮（双重编码）。试着把鼠标移到这些带虚线的词上。</p>
+<p lang="en">Each step has a learning-science reason: connect to the learner's <span data-ref="st-workspace st-audience">existing schema</span>; <span data-ref="st-spec">fade the scaffolds</span> from hinted practice to independent practice; <span data-ref="st-mechanism">change one condition at a time</span> to keep cognitive load down; use <span data-ref="first">focus</span> at the predict stage to direct attention; <span data-ref="r-verdict r-renderer r-teaches r-visible r-audience">put words right next to the picture</span>, so pointing at either lights the other (dual coding). Hover the dotted terms to try it.</p>
+</div>
+<div lang="zh">
+<p>刚才拿掉的几步里，只有“选渲染方式”的失败能在截图里看出来。不了解学习者、没有可改变的原因、没有预测、只能用鼠标、端点算错——这些情况下图都“看起来完成了”。所以最后一步是<strong>操作</strong>这张图来验证，而不只是看截图。</p>
+</div>
+<div lang="en">
+<p>Of the steps you removed, only a skipped renderer choice shows up in a screenshot. With no learner context, no cause to change, no prediction, mouse-only controls, or a wrong endpoint, the figure still looks finished. That is why the last step <strong>operates</strong> the figure instead of only looking at it.</p>
 </div>
 <label for="writing"><strong><span lang="zh">用你自己的话解释。</span><span lang="en">Explain it in your own words.</span></strong></label>
 <p class="small"><span lang="zh">“它先写 ___，再画 ___，因为一张只是看起来完成的图 ___。”</span><span lang="en">“It writes ___ before it draws ___, because a figure that only looks finished ___.”</span></p>
@@ -234,29 +286,30 @@ table{border-collapse:collapse;width:100%;margin-top:14px;font-size:14px}th,td{t
 <section id="experiment" class="figure-pane" aria-labelledby="figure-title">
 <p class="pipe-label"><span id="figure-title"><span lang="zh">流程：从请求到可教学的图</span><span lang="en">Flow: from request to teachable figure</span></span><span id="flow-summary"></span></p>
 <ol class="pipeline" id="pipeline"></ol>
+<div class="readouts">
+<div class="readout" data-part="r-audience" data-zh-label="读数：为谁而做" data-en-label="Readout: built for"><span class="k"><span lang="zh">为谁而做</span><span lang="en">Built for</span></span><strong id="r-audience"></strong></div>
+<div class="readout" data-part="r-verdict" data-zh-label="读数：判定" data-en-label="Readout: verdict"><span class="k"><span lang="zh">判定</span><span lang="en">Verdict</span></span><strong id="r-verdict"></strong></div>
+<div class="readout" data-part="r-renderer" data-zh-label="读数：渲染" data-en-label="Readout: renderer"><span class="k"><span lang="zh">渲染</span><span lang="en">Renderer</span></span><strong id="r-renderer"></strong></div>
+<div class="readout" data-part="r-teaches" data-zh-label="读数：还能教会？" data-en-label="Readout: still teaches?"><span class="k"><span lang="zh">还能教会？</span><span lang="en">Still teaches?</span></span><strong id="r-teaches"></strong></div>
+<div class="readout" data-part="r-visible" data-zh-label="读数：截图能发现的问题" data-en-label="Readout: failures a screenshot shows"><span class="k"><span lang="zh">截图能发现的问题</span><span lang="en">Failures a screenshot shows</span></span><strong id="r-visible"></strong></div>
+</div>
 <div class="preview">
-<div class="box" aria-live="off">
+<div class="box" aria-live="off" data-part="first" data-zh-label="它先说什么" data-en-label="What it says first">
 <h3 id="first-title"></h3>
 <p class="request-quote" id="request-quote"></p>
 <ul class="chat" id="first-exchange"></ul>
 </div>
-<div class="box">
+<div class="box" data-part="output" data-zh-label="产出" data-en-label="Output">
 <h3><span lang="zh">产出</span><span lang="en">Output</span></h3>
 <div id="output"></div>
 </div>
-</div>
-<div class="readouts">
-<div class="readout"><span class="k"><span lang="zh">判定</span><span lang="en">Verdict</span></span><strong id="r-verdict"></strong></div>
-<div class="readout"><span class="k"><span lang="zh">渲染</span><span lang="en">Renderer</span></span><strong id="r-renderer"></strong></div>
-<div class="readout"><span class="k"><span lang="zh">还能教会？</span><span lang="en">Still teaches?</span></span><strong id="r-teaches"></strong></div>
-<div class="readout"><span class="k"><span lang="zh">截图能发现的问题</span><span lang="en">Failures a screenshot shows</span></span><strong id="r-visible"></strong></div>
 </div>
 <p class="fig-caption" id="figure-description"></p>
 </section>
 </main>
 <script>
 'use strict';
-/* lesson-shell i18n v1: shared by every example page; keep identical across files.
+/* lesson-shell i18n v2: shared by every example page; keep identical across files.
    Static copy: paired elements <span lang="zh">…</span><span lang="en">…</span> (CSS hides the other language).
    Text-only nodes and attributes: data-i18n plus data-zh / data-en (textContent) or data-zh-<attr> / data-en-<attr>.
    Dynamic copy: tr('中文', 'English'); say(el, () => tr(…)) re-renders the message when the language changes. */
@@ -302,11 +355,184 @@ function say(target, message) {
   el.textContent = message ? message() : '';
 }
 I18N.on(() => spoken.forEach((message, el) => { el.textContent = message ? message() : ''; }));
+// On short screens the figure pane scrolls on its own; while more of it is below the fold, show a cue that scrolls it.
+(() => {
+  const pane = document.querySelector('.lesson > .figure-pane');
+  if (!pane) return;
+  const cue = document.createElement('div');
+  cue.className = 'pane-more';
+  cue.hidden = true;
+  cue.innerHTML = '<button type="button" tabindex="-1" aria-hidden="true"></button>';
+  const button = cue.firstChild;
+  const label = () => { button.textContent = tr('下方还有内容 ↓', 'More below ↓'); };
+  label();
+  I18N.on(label);
+  button.addEventListener('click', () => pane.scrollBy({ top: pane.clientHeight * 0.75, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
+  pane.after(cue);
+  function update() {
+    const scrolls = getComputedStyle(pane).overflowY !== 'visible' && pane.scrollHeight > pane.clientHeight + 1;
+    cue.hidden = !(scrolls && pane.scrollHeight - pane.clientHeight - pane.scrollTop > 4);
+    if (scrolls) pane.tabIndex = 0; else pane.removeAttribute('tabindex');
+  }
+  const sizes = new ResizeObserver(update);
+  const watch = () => { sizes.disconnect(); sizes.observe(pane); for (const child of pane.children) sizes.observe(child); };
+  new MutationObserver(() => { watch(); update(); }).observe(pane, { childList: true });
+  pane.addEventListener('scroll', update, { passive: true });
+  addEventListener('resize', update);
+  watch();
+  update();
+})();
+/* Attention guide. Figure parts: [data-part="id"] inside #experiment (labels: data-zh-label / data-en-label).
+   Step focus: a panel .step or element with data-focus="id …" dims the other parts while it is the active step
+   (focused element first, else the first visible step crossing the reading line). Ordered highlights: ol.look > li[data-focus].
+   Dual coding: [data-ref="id …"] terms and legend items link to parts both ways. Nothing moves until the learner scrolls, hovers or clicks. */
+(() => {
+  const figure = document.getElementById('experiment');
+  if (!figure || !figure.querySelector('[data-part]')) return;
+  const panel = document.querySelector('.lesson > .panel');
+  const KEY = 'tf-focus-guide', ids = value => (value || '').split(/\s+/).filter(Boolean);
+  let guide = (() => { try { return localStorage.getItem(KEY) !== 'off'; } catch { return true; } })();
+  let stepIds = [], look = null, peek = null, pinned = null, activeStep = null;
+  const style = document.createElement('style');
+  document.head.append(style);
+  const bar = document.createElement('div');
+  bar.className = 'focus-bar';
+  bar.innerHTML = '<p class="focus-caption" aria-live="polite"></p><label class="focus-toggle"><input type="checkbox"><span></span></label>';
+  const caption = bar.firstChild, toggle = bar.querySelector('input'), toggleText = bar.querySelector('.focus-toggle span');
+  toggle.checked = guide;
+  figure.prepend(bar);
+  const tip = document.createElement('div');
+  tip.className = 'part-tip';
+  tip.hidden = true;
+  document.body.append(tip);
+  const fine = matchMedia('(hover: hover) and (pointer: fine)');
+  const sel = list => list.map(id => `[data-part~="${CSS.escape(id)}"]`).join(',');
+  function render() {
+    const hot = pinned || peek || (look && look.ids) || (guide ? stepIds : []);
+    const ring = !!(pinned || peek || look);
+    figure.classList.toggle('tf-ring', ring && hot.length > 0);
+    figure.toggleAttribute('data-focusing', hot.length > 0);
+    style.textContent = hot.length ? `#experiment [data-part]:not(${sel(hot)}){opacity:.24;filter:saturate(.35)}` : '';
+    for (const part of figure.querySelectorAll('[data-part]')) part.classList.toggle('tf-hot', ring && ids(part.dataset.part).some(id => hot.includes(id)));
+  }
+  // Re-rendered figures replace their children; keep the hot class on new parts.
+  new MutationObserver(() => { if (figure.classList.contains('tf-ring')) render(); }).observe(figure, { childList: true, subtree: true });
+  const visible = el => el.offsetParent !== null || el.getClientRects().length > 0;
+  const steps = () => [...document.querySelectorAll('.panel .step, .panel [data-focus]:not(ol.look *)')].filter(visible);
+  function pickStep() {
+    const scroller = panel && getComputedStyle(panel).overflowY !== 'visible' ? panel : null;
+    const box = scroller ? scroller.getBoundingClientRect() : { top: 0, bottom: innerHeight, height: innerHeight };
+    const line = box.top + box.height * 0.3, list = steps();
+    const inView = el => { const r = el.getBoundingClientRect(); return r.bottom > box.top && r.top < box.bottom; };
+    const focused = document.activeElement && list.filter(el => el.contains(document.activeElement)).pop();
+    if (focused && inView(focused)) return focused;
+    let found = null;
+    for (const el of list) { const r = el.getBoundingClientRect(); if (r.bottom > line && r.top < box.bottom && (!found || found.contains(el))) found = el; else if (found && !found.contains(el)) break; }
+    return found;
+  }
+  function update() {
+    const step = pickStep();
+    if (step !== activeStep) {
+      activeStep = step;
+      if (look && !(step && step.contains(look.list))) setLook(null);
+    }
+    const target = step && (step.matches('[data-focus]') ? step : null);
+    stepIds = target ? ids(target.dataset.focus) : [];
+    render();
+  }
+  let queued = false;
+  const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; update(); }); } };
+  (panel || document).addEventListener('scroll', schedule, { passive: true });
+  addEventListener('scroll', schedule, { passive: true });
+  addEventListener('resize', schedule);
+  document.addEventListener('focusin', schedule);
+  new MutationObserver(schedule).observe(document.querySelector('.panel') || document.body, { attributes: true, attributeFilter: ['hidden'], subtree: true });
+  toggle.addEventListener('change', () => { guide = toggle.checked; try { localStorage.setItem(KEY, guide ? 'on' : 'off'); } catch {} render(); });
+  // Ordered highlights.
+  const lists = [...document.querySelectorAll('ol.look')];
+  function setLook(next) {
+    look = next;
+    for (const list of lists) {
+      const items = [...list.children];
+      items.forEach((li, i) => { if (next && next.list === list && next.index === i) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current'); });
+      for (const button of list.previousElementSibling.querySelectorAll('.look-num')) button.setAttribute('aria-pressed', String(!!next && next.list === list && Number(button.dataset.index) === next.index));
+    }
+    caption.textContent = '';
+    if (next) {
+      const n = document.createElement('span');
+      n.className = 'look-n';
+      n.textContent = `${next.index + 1}/${next.list.children.length}`;
+      const text = document.createElement('span');
+      text.append(...[...next.list.children[next.index].childNodes].map(node => node.cloneNode(true)));
+      caption.append(n, text);
+    }
+    render();
+  }
+  const go = (list, index) => setLook({ list, index, ids: ids(list.children[index].dataset.focus) });
+  for (const list of lists) {
+    const nav = document.createElement('div');
+    nav.className = 'look-nav';
+    const items = [...list.children];
+    items.forEach((li, i) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'look-num'; b.dataset.index = i; b.textContent = i + 1; b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', () => go(list, i));
+      nav.append(b);
+      li.addEventListener('click', event => { if (!event.target.closest('a,button,input,[data-ref]')) go(list, i); });
+    });
+    const make = (cls, zh, en, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; const label = () => { b.textContent = tr(zh, en); }; label(); I18N.on(label); b.addEventListener('click', fn); nav.append(b); };
+    const at = () => (look && look.list === list ? look.index : -1);
+    make('look-prev', '‹ 上一步', '‹ Prev', () => go(list, Math.max(0, at() - 1)));
+    make('look-next', '下一步 ›', 'Next ›', () => go(list, Math.min(items.length - 1, at() + 1)));
+    make('look-clear', '清除', 'Clear', () => setLook(null));
+    list.before(nav);
+  }
+  // Dual coding: terms ↔ parts.
+  const refs = () => document.querySelectorAll('[data-ref]');
+  for (const term of refs()) if (!term.matches('a,button,input,select,textarea,label,[tabindex]')) { term.tabIndex = 0; term.setAttribute('role', 'button'); term.setAttribute('aria-pressed', 'false'); }
+  const termOf = event => event.target.closest && event.target.closest('[data-ref]');
+  let pointer = 'mouse';
+  document.addEventListener('pointerdown', event => { pointer = event.pointerType; }, true);
+  document.addEventListener('pointerover', event => { const term = termOf(event); if (term && event.pointerType === 'mouse') { peek = ids(term.dataset.ref); render(); } });
+  document.addEventListener('pointerout', event => { const term = termOf(event); if (term && !term.contains(event.relatedTarget)) { peek = null; render(); } });
+  document.addEventListener('focusin', event => { const term = termOf(event); if (term) { peek = ids(term.dataset.ref); render(); } });
+  document.addEventListener('focusout', event => { if (termOf(event)) { peek = null; render(); } });
+  function pin(term) {
+    const next = ids(term.dataset.ref).join(' ');
+    pinned = pinned && pinned.join(' ') === next ? null : ids(next);
+    for (const other of refs()) if (other.getAttribute('role') === 'button') other.setAttribute('aria-pressed', String(!!pinned && other.dataset.ref === term.dataset.ref));
+    render();
+  }
+  document.addEventListener('click', event => { const term = termOf(event); if (term && term.getAttribute('role') === 'button' && pointer !== 'mouse') pin(term); });
+  document.addEventListener('keydown', event => {
+    const term = termOf(event);
+    if (term && term.getAttribute('role') === 'button' && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); pin(term); }
+    if (event.key === 'Escape' && (look || pinned)) { pinned = null; for (const other of refs()) if (other.getAttribute('role') === 'button') other.setAttribute('aria-pressed', 'false'); setLook(null); }
+  });
+  function partLabel(part) { return part.getAttribute(`data-${I18N.lang}-label`); }
+  figure.addEventListener('pointermove', event => {
+    const part = event.target.closest && event.target.closest('[data-part]');
+    const label = part && partLabel(part);
+    for (const term of refs()) term.classList.toggle('tf-ref-on', !!part && ids(term.dataset.ref).some(id => ids(part.dataset.part).includes(id)));
+    if (!label || !fine.matches || event.pointerType !== 'mouse') { tip.hidden = true; return; }
+    tip.textContent = label;
+    tip.hidden = false;
+    const x = Math.min(event.clientX + 14, innerWidth - tip.offsetWidth - 8), y = event.clientY + 18 + tip.offsetHeight > innerHeight ? event.clientY - tip.offsetHeight - 12 : event.clientY + 18;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  });
+  figure.addEventListener('pointerleave', () => { tip.hidden = true; for (const term of refs()) term.classList.remove('tf-ref-on'); });
+  const labels = () => { toggleText.textContent = tr('焦点引导', 'Focus guide'); };
+  labels();
+  I18N.on(() => { labels(); if (look) setLook(look); });
+  update();
+})();
 /* /lesson-shell */
 const $ = id => document.getElementById(id);
 const L = text => text[I18N.lang];
 const STAGES = [
   {id:'scope', name:{zh:'范围',en:'Scope'}},
+  {id:'workspace', name:{zh:'了解学习者',en:'Learner context'}, skippable:true},
+  {id:'audience', name:{zh:'给谁用',en:'Audience'}},
   {id:'mode', name:{zh:'交互模式',en:'Mode'}},
   {id:'mechanism', name:{zh:'找机制',en:'Mechanism'}, skippable:true},
   {id:'renderer', name:{zh:'选渲染',en:'Renderer'}, skippable:true},
@@ -314,7 +540,10 @@ const STAGES = [
   {id:'build', name:{zh:'从模型构建',en:'Build from model'}},
   {id:'operable', name:{zh:'可操作',en:'Operable'}, skippable:true},
   {id:'verify', name:{zh:'验证',en:'Verify'}, skippable:true},
+  {id:'deliver', name:{zh:'交付与记录',en:'Deliver & log'}},
+  {id:'evolve', name:{zh:'演化（可选）',en:'Evolve (optional)'}},
 ];
+const BUILD = STAGES.findIndex(stage => stage.id==='build') + 1;
 const RENDERERS = {
   'svg-2d': {name:{zh:'2D 示意图',en:'2D schematic'}},
   'iso-mechanical': {name:{zh:'Anatomy 机械剖面',en:'Anatomy cutaway'}},
@@ -364,30 +593,37 @@ const REQUESTS = {
     redirect:{zh:'和你一起挑一个机制先做，比如“热为什么从高温流向低温”。',en:'Pick one mechanism with you first, such as “why heat flows from hot to cold”.'}},
 };
 const FAILURES = {
+  workspace:{zh:'不了解学习者：重讲已经会的，或跳过缺失的前提',en:'No learner context: re-teaches what is known or skips a missing prerequisite',visible:false,teaches:'partly'},
   mechanism:{zh:'只能看动画，没有能改变的原因',en:'An animation to watch, with no cause to change',visible:false,teaches:'no'},
   spec:{zh:'没有预测，误解从未被挑战',en:'No prediction, so the misconception is never challenged',visible:false,teaches:'no'},
   renderer:{zh:'主体被画成方块，认不出来',en:'The subject is drawn as boxes and is unrecognizable',visible:true,teaches:'partly'},
   operable:{zh:'只能用鼠标，不能重置',en:'Mouse only, with no reset',visible:false,teaches:'partly'},
   verify:{zh:'端点算错，没人发现',en:'A wrong endpoint that nobody noticed',visible:false,teaches:'partly'},
 };
-const state = {prediction:null, request:'gear', mode:'guided', skipped:new Set(), routed:new Set(), triedSkip:false, done:false};
-function model(requestId, mode, skipped) {
+const state = {prediction:null, request:'gear', mode:'guided', audience:'self', workspace:false, skipped:new Set(), routed:new Set(), triedSkip:false, done:false};
+function model(requestId, mode, skipped, audience = 'self', workspace = false) {
   const request = REQUESTS[requestId];
   const built = request.verdict==='build';
   const failures = built ? [...skipped].filter(id => FAILURES[id]) : [];
   const teaches = !built ? 'none' : failures.some(id => FAILURES[id].teaches==='no') ? 'no' : failures.length ? 'partly' : 'yes';
-  return {request, built, mode, failures, teaches, visible:failures.filter(id => FAILURES[id].visible).length};
+  return {request, built, mode, audience, workspace, failures, teaches, visible:failures.filter(id => FAILURES[id].visible).length};
 }
+const current = () => model(state.request, state.mode, state.skipped, state.audience, state.workspace);
 function stageOutput(stage, m) {
   const r = m.request;
   if(stage==='scope') return m.built ? tr('可以做：有可操作的机制','Build: there is a mechanism to operate') : r.verdict==='decline' ? tr('不做：没有机制','Decline: no mechanism') : tr('改道：一次只做一个机制','Redirect: one mechanism at a time');
   if(!m.built) return tr('未进入','Not reached');
   if(m.failures.includes(stage)) return L(FAILURES[stage]);
+  const presenter = m.audience==='presenter';
   return {
+    workspace: m.workspace ? tr('先读 LESSONS / LEARNER / LEARNING-PLAN，已知的不再问','Reads LESSONS / LEARNER / LEARNING-PLAN first; skips what is known') : presenter ? tr('没有档案；老师心里有目标和顺序','No workspace; the teacher holds goals and sequence') : tr('没有档案：先做背景探测，并提议创建档案','No workspace: probe background, offer to create one'),
+    audience: presenter ? tr('老师 / 家长：插图或课堂练习，由老师讲解','Teacher / parent: an illustration or class exercise they narrate') : tr('自学者：内嵌反馈、支架逐步撤掉、独立练习','Self-learner: built-in feedback, fading scaffolds, practice'),
+    deliver: m.workspace ? tr('更新 LESSONS.md、LEARNER.md；计划里标为“已引入”','Updates LESSONS.md, LEARNER.md; marks the plan “introduced”') : tr('交付说明列出假设和已知前提','Delivery note lists assumptions and prerequisites'),
+    evolve: tr('有学习者证据时：类型化补丁 → 验证 → v2','With learner evidence: typed patch → validate → v2'),
     mode: m.mode==='guided' ? tr('只问缺失信息，至多 5 题，各带默认答案','Up to 5 questions about missing details, each with a default') : tr('不提问，用默认值并列出假设','No questions; defaults, assumptions listed'),
     mechanism: `${L(r.cause)} → ${L(r.readout)}`,
     renderer: L(RENDERERS[r.renderer].name)+' · '+L(r.why),
-    spec: tr('误解：','Misconception: ')+L(r.misconception),
+    spec: tr('误解：','Misconception: ')+L(r.misconception)+tr(' · 预测时聚焦',' · focus at predict'),
     build: tr(`一个模型驱动图和读数 · kind: ${r.kind}`,`One model drives figure and readouts · kind: ${r.kind}`),
     operable: tr('键盘、重置、减少动态、360px','Keyboard, reset, reduced motion, 360px'),
     verify: tr('操作误解，检查端点与截图','Operate the misconception; check endpoints, screenshots'),
@@ -396,6 +632,7 @@ function stageOutput(stage, m) {
 function stageState(stage, m) {
   if(stage==='scope') return m.built ? 'done' : 'stop';
   if(!m.built) return 'off';
+  if(stage==='evolve') return 'optional';
   return m.failures.includes(stage) ? 'skipped' : 'done';
 }
 const GLYPHS = {
@@ -416,11 +653,11 @@ function renderOutput(m) {
   const stamps = m.failures.filter(id => id==='renderer' || id==='mechanism').map(id => L(FAILURES[id]));
   const figure = `<div class="wire-fig${f('renderer')||f('mechanism')?' broken':''}">${GLYPHS[f('renderer')?'boxes':r.glyph]}${stamps.length?`<span class="stamp">${stamps.join(' · ')}</span>`:''}</div>`;
   const side = [
-    f('spec') ? slot(tr('预测','Predict'),tr('（缺失）没有误解可推翻','(missing) nothing to disprove'),true) : slot(tr('预测','Predict'),tr('误解：','Misconception: ')+L(r.misconception)),
+    f('spec') ? slot(tr('预测','Predict'),tr('（缺失）没有误解可推翻','(missing) nothing to disprove'),true) : slot(m.audience==='presenter'?tr('全班预测','Class prediction'):tr('预测','Predict'),tr('误解：','Misconception: ')+L(r.misconception)),
     f('mechanism') ? slot(tr('控件','Control'),tr('▶ 播放','▶ Play'),true) : slot(tr('控件','Control'),L(r.cause)),
     f('verify') ? slot(tr('读数','Readout'),tr('端点值错误，未被发现','Wrong endpoint value, unnoticed'),true) : f('mechanism') ? slot(tr('读数','Readout'),tr('（没有）','(none)'),true) : slot(tr('读数','Readout'),L(r.readout)),
   ].join('');
-  const badges = [[tr('键盘','Keyboard'),'operable'],[tr('重置','Reset'),'operable'],[tr('减少动态','Reduced motion'),'operable'],[tr('已操作验证','Operated & checked'),'verify']]
+  const badges = [[tr('键盘','Keyboard'),'operable'],[tr('重置','Reset'),'operable'],[tr('减少动态','Reduced motion'),'operable'],[m.audience==='presenter'?tr('聚焦开关','Focus toggle'):tr('聚焦引导','Focus guide'),'spec'],[tr('已操作验证','Operated & checked'),'verify']]
     .map(([label,id]) => `<span class="badge${f(id)?' lost':''}">${label}</span>`).join('');
   return `<div class="wire">${figure}<div class="wire-side">${side}<div class="badges">${badges}</div></div></div>`;
 }
@@ -431,41 +668,61 @@ function renderFirst(m) {
     $('first-exchange').innerHTML = `<li><span class="q">${tr('范围','SCOPE')}</span><span class="d">${L(r.reason)}</span></li><li><span class="q">${tr('建议','NEXT')}</span><span class="d">${L(r.redirect)}</span></li>`;
     return;
   }
+  if(!state.prediction) {
+    $('first-title').textContent = tr('你的请求','Your request');
+    $('first-exchange').innerHTML = `<li><span class="q">?</span><span class="d">${tr('它在画图之前先产出什么？在右边做出预测。','What does it produce before drawing? Predict on the right.')}</span></li>`;
+    return;
+  }
+  const presenter = m.audience==='presenter', known = m.workspace && !m.failures.includes('workspace');
+  const who = presenter ? tr('老师 / 家长讲解，课堂练习','Teacher / parent narrating; class exercise') : tr('自学者','Self-learner')+' · '+L(r.learner);
   const rows = [
-    [tr('学习者','Learner'), L(r.learner)],
+    [tr('使用者与学习者','Audience & learner'), known ? tr('来自 LEARNER.md：','from LEARNER.md: ')+who : who, known],
     [tr('结论与误解','Claim & misconception'), `${L(r.claim)}；${tr('误解：','misconception: ')}${L(r.misconception)}`],
     [tr('目标','Target'), tr('离线单文件 HTML','Standalone offline HTML')],
     [tr('精度与渲染','Fidelity & renderer'), `${L(RENDERERS[r.renderer].name)}：${L(r.why)}`],
     [tr('交互深度','Interaction'), L(r.cause)],
   ];
   if(m.mode==='guided') {
-    $('first-title').textContent = tr('五个话题示例，已知内容不再询问','Example topics; skip details already given');
-    $('first-exchange').innerHTML = rows.map(([k,v],i) => `<li><span class="q">Q${i+1}</span><span class="d"><b>${k}</b> · ${tr('推荐：','default: ')}${v}</span></li>`).join('');
+    const asked = rows.filter(row => !row[2]);
+    const probe = presenter || m.failures.includes('workspace') ? [] : known
+      ? [[tr('探测','PROBE'), tr('只探 LEARNER.md 没记录的：快速预测——','Only what LEARNER.md lacks: quick prediction — ')+L(r.misconception)+tr('，对吗？','. True?')]]
+      : [[tr('探测','PROBE'), tr('学过相关概念吗？是 / 有点 / 没有','Seen the related idea? yes / a bit / no')], [tr('探测','PROBE'), tr('快速预测：','Quick prediction: ')+L(r.misconception)+tr('，对吗？','. True?')]];
+    $('first-title').textContent = known ? tr(`先读档案，只问 ${asked.length} 题`,`Workspace read first; ${asked.length} questions left`) : tr('至多五题，已知内容不再询问','Up to five questions; skip details already given');
+    $('first-exchange').innerHTML = rows.filter(row => row[2]).map(([k,v]) => `<li><span class="q">${tr('已知','KNOWN')}</span><span class="d"><b>${k}</b> · ${v}</span></li>`).join('')
+      + asked.map(([k,v],i) => `<li><span class="q">Q${i+1}</span><span class="d"><b>${k}</b> · ${tr('推荐：','default: ')}${v}</span></li>`).join('')
+      + probe.map(([k,v]) => `<li><span class="q">${k}</span><span class="d">${v}</span></li>`).join('')
+      + `<li><span class="q">${tr('计划','PLAN')}</span><span class="d">${tr('列出计划，你确认后才开始做','States a plan; builds once you confirm')}</span></li>`;
   } else {
     $('first-title').textContent = tr('不提问，直接做；交付时列出假设','No questions; assumptions listed on delivery');
     $('first-exchange').innerHTML = rows.map(([k,v]) => `<li><span class="q">${tr('假设','ASSUME')}</span><span class="d"><b>${k}</b> · ${v}</span></li>`).join('');
   }
 }
 function render() {
-  const m = model(state.request, state.mode, state.skipped);
-  $('pipeline').innerHTML = STAGES.map((stage,i) => `<li class="node" data-stage="${stage.id}" data-state="${stageState(stage.id,m)}"><span class="num">${String(i+1).padStart(2,'0')}</span><span class="name">${L(stage.name)}</span><span class="out">${stageOutput(stage.id,m)}</span></li>`).join('');
+  const m = current();
+  const hide = !state.prediction;
+  $('pipeline').innerHTML = STAGES.map((stage,i) => `<li class="node" data-stage="${stage.id}" data-state="${hide?'hidden':stageState(stage.id,m)}" data-part="st-${stage.id}" data-zh-label="${String(i+1).padStart(2,'0')} ${stage.name.zh}" data-en-label="${String(i+1).padStart(2,'0')} ${stage.name.en}"><span class="num">${String(i+1).padStart(2,'0')}</span><span class="name">${L(stage.name)}</span><span class="out">${hide?tr('先预测','Predict first'):stageOutput(stage.id,m)}</span></li>`).join('');
   $('request-quote').textContent = L(m.request.ask);
   renderFirst(m);
-  $('output').innerHTML = renderOutput(m);
-  $('flow-summary').textContent = m.built ? tr(`8 步 · 跳过 ${m.failures.length} 步`,`8 steps · ${m.failures.length} skipped`) : tr('在第 1 步停下','Stops at step 1');
+  $('output').innerHTML = hide ? `<div class="declined"><div><strong>${tr('先记下你的预测','Save your prediction first')}</strong><p>${tr('流程和产出会在预测之后出现。','The flow and output appear after you predict.')}</p></div></div>` : renderOutput(m);
+  $('flow-summary').textContent = m.built ? tr(`${STAGES.length} 步 · 跳过 ${m.failures.length} 步`,`${STAGES.length} steps · ${m.failures.length} skipped`) : tr('在第 1 步停下','Stops at step 1');
+  $('r-audience').textContent = !m.built ? '—' : m.audience==='presenter' ? tr('课堂练习','Class exercise') : tr('自学课','Self-study');
   $('r-verdict').textContent = m.request.verdict==='build' ? tr('做','Build') : m.request.verdict==='decline' ? tr('不做','Decline') : tr('改道','Redirect');
   $('r-renderer').textContent = !m.built ? '—' : m.failures.includes('renderer') ? tr('方块占位','Placeholder boxes') : L(RENDERERS[m.request.renderer].name);
   $('r-teaches').textContent = {none:'—', yes:tr('能','Yes'), partly:tr('部分','Partly'), no:tr('不能','No')}[m.teaches];
   $('r-teaches').style.color = m.teaches==='yes' ? 'var(--good)' : m.teaches==='none' ? '' : 'var(--bad)';
   $('r-visible').textContent = m.built ? `${m.visible} / ${m.failures.length}` : '—';
   $('figure-description').textContent = describe(m);
+  if(hide) for(const id of ['r-audience','r-verdict','r-renderer','r-teaches','r-visible']) { $(id).textContent = '?'; $(id).style.color = ''; }
   $('skips').disabled = !state.prediction || !m.built;
+  $('workspace').checked = state.workspace;
+  document.querySelectorAll('input[name="audience"]').forEach(input => { input.checked = input.value===state.audience; });
   document.querySelectorAll('#skips input').forEach(input => { input.checked = state.skipped.has(input.value); });
 }
 function describe(m) {
+  if(!state.prediction) return tr(`请求：${L(m.request.ask)} 流程和产出在你预测之后显示。`,`Request: ${L(m.request.ask)} The flow and output appear after you predict.`);
   if(!m.built) return tr(`请求：${L(m.request.ask)} 在“范围”一步停下：${L(m.request.reason)}`,`Request: ${L(m.request.ask)} It stops at Scope: ${L(m.request.reason)}`);
   const skipped = m.failures.map(id => L(STAGES.find(s => s.id===id).name)).join(tr('、',', '));
-  return tr(`请求：${L(m.request.ask)} 8 步流程${skipped?`，跳过了：${skipped}`:'全部完成'}。还能教会：${$('r-teaches').textContent}。截图能发现 ${m.visible} 个问题。`,`Request: ${L(m.request.ask)} Eight-step flow${skipped?`, skipping: ${skipped}`:', all steps complete'}. Still teaches: ${$('r-teaches').textContent}. A screenshot shows ${m.visible} of the failures.`);
+  return tr(`请求：${L(m.request.ask)} ${STAGES.length} 步流程${skipped?`，跳过了：${skipped}`:'全部完成'}。还能教会：${$('r-teaches').textContent}。截图能发现 ${m.visible} 个问题。`,`Request: ${L(m.request.ask)} ${STAGES.length}-step flow${skipped?`, skipping: ${skipped}`:', all steps complete'}. Still teaches: ${$('r-teaches').textContent}. A screenshot shows ${m.visible} of the failures.`);
 }
 function progress() {
   const declinedSeen = [...state.routed].some(id => REQUESTS[id].verdict!=='build');
@@ -474,7 +731,7 @@ function progress() {
     state.done = true;
     $('explanation').hidden = false;
     const prediction = state.prediction;
-    say('prediction-feedback',() => prediction==='spec' ? tr('你的预测对了。“教学规格”在“从模型构建”之前；在画出任何东西之前，已经确定了范围、模式、机制和渲染。','Your prediction holds. The teaching spec comes before Build: scope, mode, mechanism and renderer are all settled before anything is drawn.') : tr(`你预测它${prediction==='draw'?'直接画图':'先写幻灯片'}。左边的流程里，“从模型构建”是第 6 步；前面 5 步都在决定学习者要改变什么、观察什么。${prediction==='slides'?'幻灯片在范围一步就会被改道。':''}`,`You predicted it would ${prediction==='draw'?'draw right away':'outline slides'}. In the flow, Build is step 6; the five steps before it decide what the learner changes and watches.${prediction==='slides'?' Slides are redirected at Scope.':''}`));
+    say('prediction-feedback',() => prediction==='spec' ? tr('你的预测对了。“教学规格”在“从模型构建”之前；在画出任何东西之前，已经确定了范围、模式、机制和渲染。','Your prediction holds. The teaching spec comes before Build: scope, mode, mechanism and renderer are all settled before anything is drawn.') : tr(`你预测它${prediction==='draw'?'直接画图':'先写幻灯片'}。左边的流程里，“从模型构建”是第 ${BUILD} 步；前面几步在弄清学习者是谁、要改变什么、观察什么。${prediction==='slides'?'幻灯片在范围一步就会被改道。':''}`,`You predicted it would ${prediction==='draw'?'draw right away':'outline slides'}. In the flow, Build is step ${BUILD}; the five steps before it decide what the learner changes and watches.${prediction==='slides'?' Slides are redirected at Scope.':''}`));
   }
   const routed = state.routed.size, tried = state.triedSkip;
   say('route-status',() => routed<2 ? tr('再换一个请求试试，比如一个它不该做的。','Try another request, ideally one it shouldn’t build.') : declinedSeen ? tr('你已经看到它会拒绝或改道某些请求。','You have seen it decline or redirect a request.') : tr('试试“销售看板”或“整本教材”，看范围一步怎么处理。','Try the dashboard or the textbook to see what Scope does.'));
@@ -486,7 +743,7 @@ $('prediction-form').addEventListener('submit',event => {
   state.prediction = new FormData(event.currentTarget).get('prediction');
   event.currentTarget.querySelectorAll('input,button').forEach(control => control.disabled=true);
   $('requests').disabled = false;
-  document.querySelectorAll('input[name="mode"]').forEach(input => input.disabled=false);
+  document.querySelectorAll('input[name="mode"],input[name="audience"],#workspace').forEach(input => input.disabled=false);
   state.routed.add(state.request);
   say('prediction-status',() => tr('预测已记下。现在看左边的流程。','Prediction saved. Now watch the flow on the left.'));
   render();progress();
@@ -497,12 +754,14 @@ $('requests').addEventListener('change',event => {
   render();progress();
 });
 document.querySelectorAll('input[name="mode"]').forEach(input => input.addEventListener('change',() => {state.mode = input.value;render();}));
+document.querySelectorAll('input[name="audience"]').forEach(input => input.addEventListener('change',() => {state.audience = input.value;render();}));
+$('workspace').addEventListener('change',event => {state.workspace = event.target.checked;render();});
 $('skips').addEventListener('change',event => {
   const input = event.target;
   if(input.checked) state.skipped.add(input.value); else state.skipped.delete(input.value);
   if(input.checked) state.triedSkip = true;
   render();
-  const m = model(state.request, state.mode, state.skipped);
+  const m = current();
   const id = input.value;
   if(input.checked) say('skip-status',() => tr(`跳过“${L(STAGES.find(s=>s.id===id).name)}”：${L(FAILURES[id])}。${FAILURES[id].visible?'这个问题在截图里看得出来。':'截图里看不出来——图依然“看起来完成了”。'}`,`Skipping ${L(STAGES.find(s=>s.id===id).name)}: ${L(FAILURES[id])}. ${FAILURES[id].visible?'A screenshot shows this one.':'A screenshot would not show it; the figure still looks finished.'}`));
   else say('skip-status',() => tr(`恢复了这一步。当前跳过 ${m.failures.length} 步。`,`Step restored. ${m.failures.length} skipped now.`));
@@ -518,10 +777,11 @@ $('transfer-form').addEventListener('submit',event => {
   })[answer]);
 });
 $('reset').addEventListener('click',() => {
-  Object.assign(state,{prediction:null, request:'gear', mode:'guided', skipped:new Set(), routed:new Set(), triedSkip:false, done:false});
+  Object.assign(state,{prediction:null, request:'gear', mode:'guided', audience:'self', workspace:false, skipped:new Set(), routed:new Set(), triedSkip:false, done:false});
   $('prediction-form').reset();$('prediction-form').querySelectorAll('input,button').forEach(control => control.disabled=false);
   document.querySelector('input[name="request"][value="gear"]').checked = true;$('requests').disabled = true;
   document.querySelectorAll('input[name="mode"]').forEach(input => {input.disabled = true;input.checked = input.value==='guided';});
+  document.querySelectorAll('input[name="audience"],#workspace').forEach(input => {input.disabled = true;});
   $('transfer-form').reset();$('writing').value='';$('explanation').hidden = true;
   say('transfer-feedback',null);say('prediction-feedback',null);say('route-status',null);
   say('prediction-status',() => tr('先选一个预测，然后才能操作流程。','Choose a prediction to unlock the flow.'));
