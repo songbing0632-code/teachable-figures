@@ -166,7 +166,7 @@ test('rocket cutaway and component inspection preserve the flight model',async()
   await page.close();
 });
 
-for(const name of ['geometry-slices','human-anatomy','rocket-launch','transformer-flow','chinese-clothing','how-it-works','index']){
+for(const name of ['geometry-slices','human-anatomy','rocket-launch','transformer-flow','chinese-clothing','how-it-works','ship-of-theseus','information-entropy','bayes-base-rate','seasons','dynamic-equilibrium','natural-selection','price-ceiling','moon-phases','four-stroke-engine','index']){
   test(`${name} works offline at desktop/mobile widths in both themes`,async()=>{
     mkdirSync(resolve(__dirname,'../test-results'),{recursive:true});
     for(const width of [360,1000])for(const colorScheme of ['light','dark']){
@@ -186,11 +186,49 @@ for(const name of ['geometry-slices','human-anatomy','rocket-launch','transforme
   });
 }
 
-test('example directory links to six local complete lessons',async()=>{
+test('short laptop and tablet viewports keep readouts in view and signal any pane overflow',async()=>{
+  const lessons=['geometry-slices','human-anatomy','rocket-launch','transformer-flow','chinese-clothing','gear-ratio','how-it-works','ship-of-theseus','information-entropy','bayes-base-rate','seasons','dynamic-equilibrium','natural-selection','price-ceiling','moon-phases','four-stroke-engine'];
+  for(const [width,height] of [[1280,720],[1366,768],[1024,600],[768,1024]])for(const name of lessons){
+    const page=await browser.newPage({viewport:{width,height},reducedMotion:'reduce'});
+    await page.goto(url(name));await page.waitForTimeout(150);
+    const where=`${name} at ${width}×${height}`;
+    const layout=await page.evaluate(()=>{
+      const pane=document.querySelector('.lesson > .figure-pane'),readouts=pane.querySelector('.readouts').getBoundingClientRect();
+      const kids=[...pane.children].filter(el=>el.getBoundingClientRect().height>0).map(el=>({tag:el.className||el.tagName,top:el.getBoundingClientRect().top,bottom:el.getBoundingClientRect().bottom,spill:el instanceof HTMLElement?el.scrollHeight-el.clientHeight:0}));
+      return {twoPane:matchMedia('(min-width:960px) and (min-height:560px)').matches,horizontal:document.documentElement.scrollWidth-innerWidth,
+        readouts:{top:readouts.top,bottom:readouts.bottom,height:readouts.height},bar:document.querySelector('.bar').getBoundingClientRect().bottom,
+        clipped:[...pane.querySelectorAll('*')].filter(el=>el instanceof HTMLElement&&el.getClientRects().length&&/hidden|clip|auto|scroll/.test(getComputedStyle(el).overflowY)&&el.scrollHeight-el.clientHeight>2).map(el=>el.id||el.className),
+        overflow:pane.scrollHeight-pane.clientHeight,scrolls:getComputedStyle(pane).overflowY!=='visible',cue:!document.querySelector('.pane-more')?.hidden,focusable:pane.tabIndex===0,kids};
+    });
+    assert.ok(layout.horizontal<=0,`${where}: no horizontal overflow`);
+    assert.ok(layout.readouts.height>=40,`${where}: readouts are not squashed`);
+    const kids=[...layout.kids].sort((a,b)=>a.top-b.top);
+    for(let i=1;i<kids.length;i++)assert.ok(kids[i].top>=kids[i-1].bottom-1,`${where}: ${kids[i].tag} overlaps ${kids[i-1].tag}`);
+    for(const kid of kids)assert.ok(kid.spill<=2,`${where}: ${kid.tag} spills out of its box`);
+    assert.deepEqual(layout.clipped,[],`${where}: no content is clipped or hidden in a nested scroll inside the figure pane`);
+    if(layout.twoPane){
+      assert.ok(layout.readouts.top>=layout.bar&&layout.readouts.bottom<=height,`${where}: readouts stay inside the viewport`);
+      assert.equal(layout.cue,layout.overflow>1,`${where}: the more-below cue shows exactly when the pane overflows`);
+      if(layout.overflow>1){
+        assert.ok(layout.focusable,`${where}: an overflowing pane is keyboard-scrollable`);
+        await page.locator('.pane-more button').click();
+        await page.locator('.lesson > .figure-pane').evaluate(pane=>{pane.scrollTop=pane.scrollHeight;});
+        await page.waitForTimeout(100);
+        assert.ok(await page.locator('.pane-more').isHidden(),`${where}: the cue hides at the end of the pane`);
+      }
+    }else{
+      assert.ok(!layout.scrolls||layout.overflow<=1,`${where}: stacked layout has no nested scroll`);
+      assert.ok(!layout.cue,`${where}: no cue in the stacked layout`);
+    }
+    await page.close();
+  }
+});
+
+test('example directory links to fifteen local complete lessons',async()=>{
   const page=await browser.newPage({viewport:{width:360,height:900}});
   await page.goto(url('index'));
   const links=await page.locator('article a').evaluateAll(items=>items.map(a=>a.href));
-  assert.equal(links.length,6);
+  assert.equal(links.length,15);
   links.push(await page.locator('.feature a').evaluate(a=>a.href));
   for(const link of links){await page.goto(link);assert.ok(await page.getByRole('heading',{level:1}).count());}
   await page.close();
@@ -213,14 +251,31 @@ test('how-it-works routes requests by scope and shows which skipped steps a scre
   await page.locator('#skip-spec').check();
   assert.equal(await page.locator('#r-teaches').textContent(),'No');assert.equal(await page.locator('#r-visible').textContent(),'0 / 1');
   await page.locator('#skip-renderer').check();assert.equal(await page.locator('#r-visible').textContent(),'1 / 2');
-  assert.match(await page.locator('#prediction-feedback').textContent(),/Build is step 6/);
+  assert.match(await page.locator('#prediction-feedback').textContent(),/Build is step 8/);
   await page.locator('label:has(input[name="mode"][value="direct"])').click();
   assert.equal(await page.locator('#first-exchange li').count(),5);
   assert.match(await page.locator('#first-exchange').textContent(),/ASSUME/);
   await page.locator('input[name="transfer"][value="direct"]').check();await page.getByRole('button',{name:'Check my answer'}).click();
   assert.match(await page.locator('#transfer-feedback').textContent(),/^Yes/);
+  // Audience and the learner workspace change what it asks before it builds.
+  await page.locator('label:has(input[name="mode"][value="guided"])').click();
+  const asked=async()=>page.locator('#first-exchange li .q').allTextContents();
+  assert.deepEqual((await asked()).filter(q=>q==='PROBE').length,2,'a self-learner without a workspace gets a background probe');
+  await page.locator('#workspace').check();
+  assert.match(await page.locator('#pipeline [data-stage="workspace"]').textContent(),/Reads LESSONS/);
+  assert.match(await page.locator('#first-exchange').textContent(),/from LEARNER\.md/);
+  assert.equal((await asked()).filter(q=>/^Q\d/.test(q)).length,4,'answers in the workspace are not asked again');
+  await page.locator('label:has(input[name="audience"][value="presenter"])').click();
+  assert.equal(await page.locator('#r-audience').textContent(),'Class exercise');
+  assert.equal((await asked()).filter(q=>q==='PROBE').length,0,'a presenter build has no learner probe');
+  assert.equal(await page.locator('#pipeline [data-stage="evolve"]').getAttribute('data-state'),'optional');
+  // The explanation's look sequence spotlights the matching flow steps.
+  await page.locator('.look-num').first().click();
+  assert.match(await page.locator('.focus-caption').innerText(),/^1\/7/);
+  assert.equal(await page.locator('#pipeline [data-part="st-workspace"]').evaluate(el=>el.classList.contains('tf-hot')),true);
   await page.locator('#reset').click();
   assert.equal(await page.locator('#explanation').isVisible(),false);assert.equal(await page.locator('input[name="request"][value="gear"]').isDisabled(),true);
+  assert.equal(await page.locator('#workspace').isDisabled(),true);
   await page.close();
 });
 

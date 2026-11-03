@@ -2,6 +2,7 @@
   "name": "teachable-figures",
   "version": "0.3.0",
   "private": true,
+  "license": "(MIT AND CC-BY-4.0)",
   "description": "An agent skill for interactive teaching figures built around predict, try, and explain.",
   "scripts": {
     "test": "node --test tests/*.test.mjs",

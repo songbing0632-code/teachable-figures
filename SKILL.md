@@ -9,6 +9,15 @@ A teachable figure makes one mechanism visible and manipulable. The learner pred
 
 This skill fuses the original teaching method with iso-figure's working SVG objects and Anatomy's mechanical geometry, depth ordering, shaders, and optional true 3D runtime. **Teaching determines the model; the subject determines the required shape and material; the model drives the picture and its readouts.** Check both teaching correctness and visual fidelity.
 
+**This skill builds learning exercises and illustrations, not teaching.** Teaching, in the sense of lecturing or presenting an explanation, belongs to the teacher, parent, or text. A figure supports *learning*: scaffolding and sensemaking while the learner predicts, operates, notices, and explains. Design every build for that, and read [learning design](references/learning-design.md) before writing the spec.
+
+**Audience changes the build.**
+- **Teacher or parent (presenter).** They already have goals, a sequence, and a knowledge path, and they scaffold live: voiceover, questioning, watching what learners do, directing attention. Default to an **illustration / classroom exercise**: a large legible figure, little embedded explanation, a class prediction prompt, a focus guide the presenter can toggle, and ordered highlights to step through while talking.
+- **Solo self-learner.** Nobody else scaffolds, so the artifact must: a short background-knowledge probe first, embedded misconception-specific feedback, fading into independent practice, then transfer.
+- **Teach layer, only on request:** an ordered look sequence ("look here → you see this; now look there → …") plus an explanation tied to the learner's existing schema.
+
+**Learner workspace.** When the user's project has a `teachable-figures/` workspace (`LESSONS.md`, `LEARNER.md`, `LEARNING-PLAN.md`), read it **at the start of the session, before asking anything**, and update it after delivery. If it is absent, offer to create it from [the templates](assets/templates/). See [learner workspace](references/learner-workspace.md).
+
 For AI English Shift, first read [the app adapter](references/ai-english-shift.md). Its contracts apply only there. Otherwise inspect the host project's conventions. Paths in this skill are relative to its own directory, including when invoked through a symlink.
 
 ## Scope
@@ -27,17 +36,19 @@ When a request straddles the boundary, say which part this skill covers and buil
 
 ## 0. Choose the interaction mode
 
-**Guided mode (default).** Before building, ask one compact round of questions — at most five, each with a recommended default the user can accept with one word. Ask only what the request and host project leave open:
+**Guided mode (default).** First read the learner workspace if one exists; skip every question it already answers. Then ask one compact round of questions — at most five, each with a recommended default the user can accept with one word. Ask only what the request, the workspace, and the host project leave open:
 
-1. **Learner:** who, prior knowledge, study language.
+1. **Audience and learner:** presenter (teacher/parent narrating) or self-learner; who the learner or class is; study language.
 2. **Claim and misconception:** the sentence to understand and the wrong prediction to disprove. Propose one if the source implies it.
 3. **Target:** standalone offline HTML, or an existing app (which framework and lesson schema).
 4. **Fidelity:** schematic, recognizable detail, or true 3D — with the renderer you would pick and why (see section 2).
 5. **Interaction depth:** the 2–4 controls and the readout you plan to use.
 
-Then state a short plan — claim, misconception, `kind`, renderer, controls — and build once the user confirms or adjusts it. Do not ask about facts you can read from the source or the host project; do not ask a second round unless an answer changes the mechanism.
+**Self-learner probe.** For a self-learner whose prior knowledge of this topic is unknown, add 2–4 short diagnostic questions in the same round. Each question checks one prerequisite or surfaces one likely misconception. Make them answerable in a word or a choice; one should be a quick prediction. Use the answers to choose the starting point, the amount of scaffolding (experienced learners get less; see expertise reversal in the learning-design guide), and whether a prerequisite needs its own figure first. Record them as evidence, not verdicts.
 
-**Direct mode.** Skip the interview when the user says so ("just build it", "skip questions", "直接生成") or the request already names the claim, learner, target, and fidelity. Apply defaults — one figure, standalone offline HTML, the request's language, the simplest renderer that meets the subject's fidelity — and list each assumption in the delivery note so the user can correct it afterward.
+Then state a short plan — audience build, claim, misconception, `kind`, renderer, controls — and build once the user confirms or adjusts it. If the concept has no place in `LEARNING-PLAN.md`, you may also propose a small knowledge-point subgraph (3–7 points: prerequisites, the target, one or two next points). The user can accept, edit, or skip it; never expand it into a course. Do not ask about facts you can read from the source or the host project; do not ask a second round unless an answer changes the mechanism.
+
+**Direct mode.** Skip the interview when the user says so ("just build it", "skip questions", "直接生成") or the request already names the claim, learner, target, and fidelity. Apply defaults — the workspace's audience and profile if present, otherwise a self-learner build; one figure; standalone offline HTML; the request's language; the simplest renderer that meets the subject's fidelity — and list each assumption, including assumed prior knowledge, in the delivery note so the user can correct it afterward.
 
 ## 1. Find the teachable mechanism
 
@@ -107,6 +118,17 @@ Read [teaching-and-spec.md](references/teaching-and-spec.md) for the reusable co
 - `caveat`: assumptions, illustrative values, and where the analogy stops.
 - `frame`: a sentence frame in the requested study language; English in AI English Shift.
 
+Also answer the learning-design checklist in [learning-design.md](references/learning-design.md) §9:
+- the audience;
+- prior-knowledge assumptions, each with its source (probed / stated / assumed);
+- the schema link and the schema change;
+- what the predict stage hides;
+- a **focus plan** naming the figure parts for each step;
+- a **look sequence**, only if a teach layer was requested;
+- a **dual-coding map** (term ↔ part ↔ readout);
+- the scaffolds and when they fade;
+- a feedback map from each wrong answer to its misconception.
+
 For a mechanical or spatial figure, additionally plan the concept-to-part mapping, observable readout, coordinates/units, moving groups and joints, legal ranges, and reset state. These may live in a design note or supported `config`; do not silently add top-level fields to a fixed app schema.
 
 In a design note, name the action and observation that count as a meaningful try, what a satisfactory causal explanation must say, and one new case the learner predicts afterward. Reuse the host's feedback controls; do not impose a hidden reveal lock or change its schema.
@@ -123,6 +145,7 @@ For `iso-lite`, use face-local SVG shapes and one projection matrix. For crafted
 - Mechanical detail should help recognition or explanation. Scale density to the lesson; there is no universal minimum part count.
 - Establish a recognizable silhouette, characteristic structures, surface curvature and appropriate materials before adding secondary controls. Cutaways reveal thickness and actual interiors; folded cloth has overlapping faces and valleys. A disclaimer does not make a placeholder meet a request for detail.
 - Use restrained tones and a focal accent. Keep explanations around the stage; short labels, legends, or paired plots are appropriate when learners need them. Preserve product theme tokens and semantic colors.
+- Direct attention instead of showing everything at once. At the predict stage show only what the prediction needs. Mark figure parts with `data-part` and give each panel step `data-focus`, so the shell's focus guide dims the rest. Use `<ol class="look">` for ordered highlights. Link text terms and legends to parts with `data-ref` (dual coding). The API is in [learning-design.md](references/learning-design.md) §8; outside the lesson shell, implement the same behaviour with the host's components.
 - In an existing lesson frame, render only the stage. Do not nest another prediction form, caption card, or writing exercise inside it.
 
 Choose standalone HTML/SVG or the host framework. For React, read [the bundled React guide](assets/anatomy/references/react.md), adapting its server/client split to the actual app. Vite React has no automatic server component layer. Do not import Node-only geometry builders into browser code.
@@ -145,12 +168,17 @@ Accept teaching correctness and visual fidelity separately. Check the silhouette
 
 The teaching acceptance check is whether the control changes the answer, the result challenges the misconception, the model states its limits, the first comparison stays small, and the learner can explain a new case.
 
-Deliver the figure/spec/source appropriate to the request and briefly state the claim, useful controls, assumptions, and verification. Creating a lesson figure does not authorize changing unrelated product pages or publishing to an external gallery.
+Deliver the figure/spec/source appropriate to the request and briefly state the claim, useful controls, assumptions, and verification. If a learner workspace exists, update `LESSONS.md`, link the lesson in `LEARNING-PLAN.md` (status `introduced`, never `secure` without learner-produced evidence), and add dated observations to `LEARNER.md`; tell the user what changed. Creating a lesson figure does not authorize changing unrelated product pages or publishing to an external gallery.
+
+## 7. Optional: evolve the artifact from learner evidence
+
+Only when asked to continue a lesson from a learner's record. Read [evolving-artifacts.md](references/evolving-artifacts.md). Treat the exported evidence as observations, write a hypothesis with its uncertainty, and choose one pedagogical action. Express it as a typed patch whose new components read the same truth model and declare executable invariants. Apply it with `scripts/evolve-apply.mjs`, which writes the next version only if validation passes. Never claim to know the learner's mind, and never present a toggle of preauthored content as generation. [The cone pilot](examples/evolve/geometry-slices/) shows one round.
 
 ## Resources and provenance
 
-- [Offline example directory](examples/index.html) links six complete bilingual lessons and [how it works](examples/how-it-works.html), a figure that teaches this workflow. All share one two-pane lesson shell: figure and readouts on the left, steps and controls on the right. [Cone sections](examples/geometry-slices.html) and [chest anatomy](examples/human-anatomy.html) demonstrate actual 3D rotation, [rocket launch](examples/rocket-launch.html) uses an ideal flight model, [Transformer data flow](examples/transformer-flow.html) exposes toy calculations, and [a Ming robe](examples/chinese-clothing.html) separates historical evidence from schematic construction. Read each example's limits before adapting it.
+- [Offline example directory](examples/index.html) links fifteen complete bilingual lessons and [how it works](examples/how-it-works.html), a figure that teaches this workflow. All share one two-pane lesson shell: figure and readouts on the left, steps and controls on the right. [Cone sections](examples/geometry-slices.html), [chest anatomy](examples/human-anatomy.html), [seasons](examples/seasons.html) and [Moon phases](examples/moon-phases.html) demonstrate actual 3D rotation, [a four-stroke engine](examples/four-stroke-engine.html) is a 3D Anatomy-kit cutaway, [rocket launch](examples/rocket-launch.html) uses an ideal flight model, [Transformer data flow](examples/transformer-flow.html) exposes toy calculations, and [a Ming robe](examples/chinese-clothing.html) separates historical evidence from schematic construction. [Ship of Theseus](examples/ship-of-theseus.html) shows how a philosophy lesson can teach an argument's structure (competing criteria) without declaring a winner, and [entropy](examples/information-entropy.html) ties an abstract quantity to a countable one (yes/no questions). Read each example's limits before adapting it.
 - [Complete gear-ratio lesson](examples/gear-ratio.html) shows prediction, two comparable trials, explanation, and a transfer question in one offline page. It uses a schematic ideal model rather than a tooth-contact solver.
+- [Learning design](references/learning-design.md) turns schema theory, scaffolding, cognitive load, signaling, and dual coding into build rules and a spec checklist. [Learner workspace](references/learner-workspace.md) defines the local `LESSONS.md` / `LEARNER.md` / `LEARNING-PLAN.md` files, with [templates, an agent snippet, and a filled sample](assets/templates/).
 - [Sources and fusion decisions](references/sources-and-fusion.md) explains what is bundled, licenses, and how conflicting upstream conventions were resolved.
 - [Source manifest](references/source-manifest.json) pins the downloaded revisions.
 - Read only the selected mode's guides. Upstream technical references provide APIs and geometry recipes; this entrypoint governs the combined teaching workflow.

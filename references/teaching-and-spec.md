@@ -23,6 +23,8 @@ Follow the host's actual types. In a standalone figure this is a useful conceptu
 }
 ```
 
+Learning-design fields (audience, prior knowledge and its source, schema link, focus plan, look sequence, dual-coding map, scaffolds and fading, feedback map) live in the design note beside this spec. See the checklist in [learning-design.md](learning-design.md) §9. Like the mechanical plan, they are author decisions, not new fields in a host schema.
+
 Use the lesson's own numbers and scenario where available. `answer` is a zero-based index into the options in this example. A host may group options and answer differently; adapt to its real contract. Learner-facing copy uses every language the product ships; studied prompts, tokens and outputs stay in the study language.
 
 Prediction is about a result learners can inspect. If movement alone is ambiguous, add a counter, paired plot, trace, before/after state, or highlighted contact. Reveal feedback after a meaningful try; a wrong prediction should trigger observation, not immediate correction that removes the experiment.

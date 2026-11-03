@@ -10,6 +10,14 @@ Ensure reset restores semantic state and view state as intended. An exploded vie
 
 For a stochastic figure, verify normalized expected probabilities and reproducible seeded samples separately. A single sampled batch is not a pass/fail check on a general causal claim. Check the author's explanation criteria and one unseen transfer case; label these design checks separately from evidence collected with learners.
 
+Check the learning-design answers against the build ([learning-design.md](learning-design.md) §9):
+- the build matches its audience: little copy and presenter controls for a presenter build; a probe, feedback, fading and transfer for a self-learner build;
+- the predict stage does not show the answer;
+- every `data-focus` and `data-ref` id resolves to a `data-part`;
+- the focus guide can be turned off;
+- ordered highlights never autoplay;
+- each wrong option has misconception-specific feedback.
+
 ## Browser interaction and presentation
 
 Before accepting the visual, apply the separate representation gate in [rendering-selection.md](rendering-selection.md). Check the actual subject silhouette, characteristic structures, material and section/fold depth against its reference. Record which upstream code or source assets are actually used. Input/reset tests do not establish visual quality, and a simplification disclaimer does not waive a requested detail level.

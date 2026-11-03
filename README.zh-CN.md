@@ -34,13 +34,20 @@ git clone https://github.com/ywEdAi/teachable-figures.git ~/.codex/skills/teacha
 
 ## 两种使用方式
 
-**引导模式（默认）**：技能先问一轮问题，最多五个，每个都附推荐答案，可以直接回“好”。问题包括：学习者是谁、要理解的结论与常见误解、输出为独立 HTML 还是接入已有应用、需要示意图/细节/3D 中的哪一种，以及计划使用的控件。确认方案后才开始生成。
+**引导模式（默认）**：如果项目里有学习者工作区（见下文），技能会先读它，已经写明的就不再问。然后问一轮问题，最多五个，每个都附推荐答案，可以直接回“好”：
+- 使用对象（老师或家长讲解，还是自学者）以及学习者是谁；
+- 要理解的结论与常见误解；
+- 输出为独立 HTML 还是接入已有应用；
+- 需要示意图、细节还是 3D；
+- 计划使用的控件。
+
+如果是自学者，还会加 2–4 个简短的诊断题，了解先修知识和可能的误解，并可以建议一个小的知识点计划。确认方案后才开始生成。
 
 ```text
 /teachable-figures 我想给初中生讲：为什么加一个惰轮不会改变传动比的大小。
 ```
 
-**直接模式**：说“直接生成”或“跳过提问”，或者在请求里已写清结论、学习者、输出形式与细节程度，技能就用默认值直接制作，并在交付说明里列出所有假设。
+**直接模式**：说“直接生成”或“跳过提问”，或者在请求里已写清结论、学习者、输出形式与细节程度，技能就用默认值直接制作（除非工作区另有说明，默认按自学者设计），并在交付说明里列出所有假设，包括对先修知识的假设。
 
 ```text
 /teachable-figures 直接生成。解释为什么加入惰轮不会改变最终传动比的大小。
@@ -58,7 +65,37 @@ git clone https://github.com/ywEdAi/teachable-figures.git ~/.codex/skills/teacha
 
 生成的图解是教学设计，不代表已经验证了学习效果。
 
-## 在线体验六个完整示例
+## 是学习，不是讲授
+
+这个技能做的是**学习练习和图解**。讲授，也就是讲解或演示一套解释，仍然由老师、家长或课文承担。图解支持的是学习者自己做的事：预测、动手改变原因、注意结果、解释原因。
+
+**使用对象不同，做法也不同。**
+
+| | 老师或家长（讲解者） | 自学者 |
+| --- | --- | --- |
+| 谁来搭支架 | 你本人，现场：讲解、提问、指给学生看 | 图解本身 |
+| 默认做法 | 大图、少文字、给全班的预测题、可开关的聚焦引导、讲解时逐步点亮的有序高亮 | 先修知识诊断、针对误解的反馈、撤掉支架后的独立练习、迁移题 |
+
+只有你希望图解自己来讲解时，才需要加**讲解层**：一组有顺序的“先看这里 → 你会看到……；再看那里 → ……”，并联系学习者已有的知识。
+
+**学习者工作区**：在项目的 `teachable-figures/` 文件夹里放三个 Markdown 文件。任何编程 agent 在每节课前都会先读它们，课后再更新：
+- `LESSONS.md`：做过的所有课程。
+- `LEARNER.md`：学习者或班级档案，包括先修知识和观察到的误解，每条都附证据。
+- `LEARNING-PLAN.md`：知识点、先修关系和掌握状态。
+
+可以从[模板](assets/templates/)开始，把[给 agent 的说明片段](assets/templates/agents-snippet.md)贴进 `AGENTS.md` 或 `CLAUDE.md`。[填好的示例](assets/templates/sample/)展示了一位自学者学完三节课后的样子。文件里不记录姓名，也不保存原始录音，你可以随时修改或删除任何内容。详见[学习者工作区](references/learner-workspace.md)。
+
+**学习科学依据**：每份教学规格都要回答一张清单，涵盖：
+- 图式：联系已有图式，并说明要改变什么；
+- 支架与撤除；
+- 认知负荷：先只改一个变量、分步呈现、预测阶段不露出答案；
+- 注意与提示：每一步的聚焦引导和有序高亮；
+- 双重编码：文字术语、图例与图中部件在悬停或聚焦时互相联动；
+- 针对误解的反馈。
+
+原则与文献出处（Sweller、Mayer、Paivio、Wood、Bruner 与 Ross、Kalyuga、Chi 等）见[学习设计](references/learning-design.md)。它们是设计原则，不能保证一定学会。
+
+## 在线体验十五个完整示例
 
 ![六个示例的实际截图：圆锥截面、胸腔示意、火箭发射、Transformer 数据流、明代曳撒与齿轮传动](assets/readme/examples.png)
 
@@ -74,8 +111,17 @@ git clone https://github.com/ywEdAi/teachable-figures.git ~/.codex/skills/teacha
 | [Transformer 数据流](https://ywedai.github.io/teachable-figures/transformer-flow.html) | 逐步查看示例向量、Q/K/V、因果遮罩、注意力、残差归一化与 FFN。 |
 | [明代曳撒结构](https://ywedai.github.io/teachable-figures/chinese-clothing.html) | 依据一件博物馆藏品，检查交叠衣襟、有明暗面的褶层与折返剖面。 |
 | [齿轮传动比](https://ywedai.github.io/teachable-figures/gear-ratio.html) | 加入惰轮，区分输出转数的大小与旋转方向。 |
+| [忒修斯之船 · 哲学](https://ywedai.github.io/teachable-figures/ship-of-theseus.html) | 逐块换板、用旧板重拼一艘船，看物质、连续性、形式、名义四条标准如何给出不同答案；再看复制的复制如何丢失设计信息。 |
+| [信息熵 · 信息论](https://ywedai.github.io/teachable-figures/information-entropy.html) | 搭建是/否提问树，比较平均提问数与熵；把几次报告打包一起问，平均可降到一个问题以下。 |
+| [贝叶斯与基础比率 · 概率](https://ywedai.github.io/teachable-figures/bayes-base-rate.html) | 在 1000 人点阵里只看阳性者，数出其中真正患病的比例；再测一次，看先验如何更新。 |
+| [四季成因 · 地球科学](https://ywedai.github.io/teachable-figures/seasons.html) | 拖动日期和纬度，比较正午太阳高度、日照时长与每日日照量；转动三维轨道，看地轴方向始终不变；把地轴倾角调成 0，季节就消失。 |
+| [月相 · 天文，三维](https://ywedai.github.io/teachable-figures/moon-phases.html) | 转动三维日地月模型，对照地球上看到的月亮：月亮永远半边亮，月相取决于角度；5° 的轨道倾角解释了月食为什么不是每月都有。 |
+| [四冲程发动机 · 机械，三维](https://ywedai.github.io/teachable-figures/four-stroke-engine.html) | 转动三维剖面的曲轴：气门、火花塞和正时皮带说明为什么曲轴转两圈才点一次火，凸轮轴只转半速。 |
+| [动态平衡 · 化学](https://ywedai.github.io/teachable-figures/dynamic-equilibrium.html) | 看正逆反应速率趋于相等却都不为零；用同位素标记证明平衡时反应仍在进行，再从速率推出勒夏特列原理。 |
+| [自然选择 · 生物](https://ywedai.github.io/teachable-figures/natural-selection.html) | 扮演捕食的鸟，看桦尺蛾黑色型频率跨代变化；没有变异，选择就无从发生。 |
+| [价格上限 · 经济](https://ywedai.github.io/teachable-figures/price-ceiling.html) | 拖动房租上限，看短缺与无谓损失；比较价高者得、抽签、排队三种分配的额外损失。 |
 
-圆锥与胸腔使用空间坐标、旋转、投影和深度排序。胸腔采用 Human Reference Atlas 网格，另有明确标注的示意膈肌与检查用观察窗；火箭是一维理想模型；Transformer 使用公开说明的简化参数；服饰图把史料事实与示意重建分开标注。所有示例都有中英文切换。
+圆锥与胸腔使用空间坐标、旋转、投影和深度排序。胸腔采用 Human Reference Atlas 网格，另有明确标注的示意膈肌与检查用观察窗；火箭是一维理想模型；Transformer 使用公开说明的简化参数；服饰图把史料事实与示意重建分开标注。忒修斯之船不判定哪个答案正确，只展示各条标准的论证结构；信息熵页的数值都按精确公式计算。所有示例都有中英文切换。
 
 <details>
 <summary>查看最初的齿轮教学实验</summary>
@@ -135,7 +181,7 @@ npm run audit:3d
 | [Anatomy · wheresryan22/anatomy](https://github.com/wheresryan22/anatomy) | 机械实体、关节与管线、剖面与爆炸图、相机控制、3D/WebGL 技术及几何验证工具。内置于 `assets/anatomy/`。 | [`454a0ef`](https://github.com/wheresryan22/anatomy/tree/454a0ef801b6d9b905f08309d094491c7085b3dd) | [MIT · Ryan](assets/anatomy/LICENSE) |
 | [iso-figure · MrBongoC/ai-iso-skill](https://github.com/MrBongoC/ai-iso-skill) | 等轴 SVG 投影、可用的按键/开关/显示屏、共享状态与渲染流程、便携 HTML 示例。内置于 `assets/iso-figure/`，工作流适配见 `references/simple-iso.md`。 | [`44b4da7`](https://github.com/MrBongoC/ai-iso-skill/tree/44b4da7714148eef547cc1b102e433472dfe3531) | [MIT · Tolga Cohce](assets/iso-figure/LICENSE) |
 
-上游实际名称是 **Anatomy**；这里指解释性物体的渲染工具包，不是医学解剖图谱。本项目根据教学需要调整了上游约定：不强制零件数量，预测前不自动巡游，允许清晰的标签，提供原生控件与减少动态效果支持，并让画面与解释共用同一份模型。仓库还包含本地几何修复、无障碍改进、六个完整课程示例和评审工具。
+上游实际名称是 **Anatomy**；这里指解释性物体的渲染工具包，不是医学解剖图谱。本项目根据教学需要调整了上游约定：不强制零件数量，预测前不自动巡游，允许清晰的标签，提供原生控件与减少动态效果支持，并让画面与解释共用同一份模型。仓库还包含本地几何修复、无障碍改进、十五个完整课程示例和评审工具。
 
 [来源与融合决策](references/sources-and-fusion.md) 说明各部分的贡献边界；[来源清单](references/source-manifest.json) 记录完整提交号与本地改动。每个课程页面另列其科学或历史依据。
 
@@ -143,11 +189,13 @@ README 的设计工作流使用了 [oil-oil/beautify-github-readme](https://gith
 
 人体胸腔还使用了 **[Human Reference Atlas / HuBMAP 参考网格](https://humanatlas.io/3d-reference-library)**，许可证为 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)。它是领域数据来源，与渲染技能分别列示。[数据来源记录](assets/hra/provenance.json) 包含固定版本、原文件哈希、裁切、压缩与改色说明；另附 [重建方法](assets/hra/README.md)。
 
-两个上游的完整 MIT 声明保留在 [Anatomy LICENSE](assets/anatomy/LICENSE) 和 [iso-figure LICENSE](assets/iso-figure/LICENSE)。这些许可适用于对应的上游贡献；本仓库未对原有课程材料、应用参考或截图额外授予新的许可证。
+两个上游的完整 MIT 声明保留在 [Anatomy LICENSE](assets/anatomy/LICENSE) 和 [iso-figure LICENSE](assets/iso-figure/LICENSE)。这些许可适用于对应的上游贡献。
+
+**本仓库自己的内容**采用双许可：原创代码（脚本、测试，以及各课程页面的 HTML/CSS/JavaScript）使用 [MIT 许可证](LICENSE)；原创课程内容（文字、插图、图示、预览图，以及 `SKILL.md` 和 `references/` 中的写作指导）使用 [CC BY 4.0](LICENSE-CONTENT)。两者都可以复用和改编，包括商业用途：代码请保留 MIT 声明，内容请注明“Teachable Figures by ywEdAi”。随附的第三方材料仍按上文所列各自的许可证。
 
 ## 已知局限
 
-- 上游 Anatomy 示例主要展示渲染技术。接入课程前，需要关闭启动及闲置后恢复的自动巡游；六个完整课程不自动播放。
+- 上游 Anatomy 示例主要展示渲染技术。接入课程前，需要关闭启动及闲置后恢复的自动巡游；十五个完整课程不自动播放。
 - AI English Shift 适配面向特定宿主，使用前应核对宿主当前代码、注册结构与语言要求。
 - 模型和浏览器检查通过，不等同于已证明学习效果。本次评审没有开展新手学习者实验或屏幕阅读器实测。
 - 完整机械审计覆盖配置的 turning-dial 场景。圆锥和胸腔使用独立检查与选定视角检查，没有进行穷尽的网格相交证明。
